@@ -20,3 +20,20 @@ ENV/
 # Local development
 *.db
 *.sqlite3
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+*.zip
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+
+# VSCode installer
+VSCodeSetup.exe
+
+# Conversation logs
+conversation_*.json
