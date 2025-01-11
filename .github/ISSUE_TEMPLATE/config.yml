@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Head AI Documentation
+    url: https://github.com/YourUsername/Head-AI/wiki
+    about: Check our documentation for guides and troubleshooting
+  - name: Head AI Discussions
+    url: https://github.com/YourUsername/Head-AI/discussions
+    about: Ask questions and share your ideas
