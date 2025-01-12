@@ -1,0 +1,170 @@
+project:
+  name: Head AI
+  version: 1.0.0
+  description: Advanced AI platform for intelligent automation and decision making
+
+output:
+  format: html
+  theme: material
+  logo: assets/logo.png
+  favicon: assets/favicon.ico
+  search: true
+  navigation:
+    - API Reference
+    - Integration Guide
+    - Best Practices
+    - Troubleshooting
+
+api:
+  title: Head AI API
+  version: v1
+  base_url: /api/v1
+  auth:
+    - bearer_token
+    - api_key
+  rate_limit:
+    requests: 100
+    period: 1m
+  endpoints:
+    include:
+      - api/
+      - services/
+    exclude:
+      - tests/
+      - internal/
+  models:
+    include:
+      - models/
+    exclude:
+      - models/internal/
+
+templates:
+  path: docs/templates
+  extensions:
+    - .html
+    - .md
+    - .rst
+  variables:
+    company: Head AI
+    support_email: support@headai.com
+    docs_url: https://docs.headai.com
+
+markdown:
+  extensions:
+    - extra
+    - codehilite
+    - mdx_math
+    - toc
+    - meta
+    - tables
+    - fenced_code
+  syntax_highlighting: true
+  math_support: true
+  diagrams: true
+
+code_examples:
+  languages:
+    - python
+    - javascript
+    - curl
+  frameworks:
+    - flask
+    - fastapi
+    - react
+  highlight_style: monokai
+
+integration:
+  sections:
+    - getting_started
+    - authentication
+    - basic_usage
+    - advanced_features
+    - error_handling
+  examples:
+    path: docs/examples
+    categories:
+      - authentication
+      - crud_operations
+      - real_time_processing
+      - batch_processing
+      - error_handling
+
+best_practices:
+  categories:
+    - security
+    - performance
+    - scalability
+    - monitoring
+    - deployment
+  format: markdown
+  include_examples: true
+
+troubleshooting:
+  categories:
+    - installation
+    - configuration
+    - api_usage
+    - common_errors
+    - performance_issues
+  format: markdown
+  include_solutions: true
+  include_diagnostics: true
+
+search:
+  engine: lunr
+  fields:
+    - title
+    - content
+    - tags
+  boost:
+    title: 10
+    content: 5
+    tags: 3
+  exclude:
+    - changelog
+    - license
+
+versioning:
+  enabled: true
+  versions:
+    - 1.0.0
+    - 0.9.0
+    - 0.8.0
+  latest: 1.0.0
+  archived:
+    - 0.7.0
+    - 0.6.0
+
+analytics:
+  enabled: true
+  provider: google
+  tracking_id: UA-XXXXXXXX-X
+  anonymize_ip: true
+
+feedback:
+  enabled: true
+  methods:
+    - github_issues
+    - email
+    - feedback_form
+  categories:
+    - bug
+    - enhancement
+    - question
+    - documentation
+
+export:
+  formats:
+    - pdf
+    - epub
+    - html
+  include_assets: true
+  compress: true
+  single_page: false
+
+validation:
+  links: true
+  html: true
+  spelling: true
+  style_guide: true
+  openapi: true
