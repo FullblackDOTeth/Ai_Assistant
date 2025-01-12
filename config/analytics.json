@@ -1,0 +1,204 @@
+{
+  "database": {
+    "name": "headai_db",
+    "user": "headai_user",
+    "password": "${DB_PASSWORD}",
+    "host": "localhost",
+    "port": 5432,
+    "pool_size": 20,
+    "max_overflow": 10
+  },
+
+  "redis": {
+    "host": "localhost",
+    "port": 6379,
+    "password": "${REDIS_PASSWORD}",
+    "db": 1,
+    "pool_size": 100
+  },
+
+  "metrics": {
+    "collection_interval": 60,
+    "retention_days": 90,
+    "exporters": {
+      "prometheus": {
+        "enabled": true,
+        "port": 9090,
+        "path": "/metrics"
+      },
+      "statsd": {
+        "enabled": true,
+        "host": "localhost",
+        "port": 8125,
+        "prefix": "headai"
+      }
+    }
+  },
+
+  "reports": {
+    "performance": {
+      "intervals": ["1h", "24h", "7d", "30d"],
+      "metrics": [
+        "system_resources",
+        "api_usage",
+        "model_performance",
+        "user_activity"
+      ],
+      "cache_duration": 3600
+    },
+    "business": {
+      "intervals": ["7d", "30d", "90d", "365d"],
+      "metrics": [
+        "user_growth",
+        "usage_trends",
+        "cost_analysis",
+        "revenue_metrics"
+      ],
+      "cache_duration": 86400
+    },
+    "custom": {
+      "enabled": true,
+      "max_timeframe": "365d",
+      "max_metrics": 20
+    }
+  },
+
+  "dashboards": {
+    "refresh_interval": 300,
+    "default_timeframe": "24h",
+    "panels": {
+      "system": [
+        "cpu_usage",
+        "memory_usage",
+        "disk_usage",
+        "network_io"
+      ],
+      "api": [
+        "requests_per_second",
+        "response_times",
+        "error_rates",
+        "endpoint_usage"
+      ],
+      "users": [
+        "active_users",
+        "session_duration",
+        "user_actions",
+        "geographic_distribution"
+      ],
+      "models": [
+        "prediction_count",
+        "accuracy_metrics",
+        "latency_distribution",
+        "resource_usage"
+      ]
+    }
+  },
+
+  "alerts": {
+    "enabled": true,
+    "channels": {
+      "email": {
+        "enabled": true,
+        "recipients": ["alerts@headai.com"]
+      },
+      "slack": {
+        "enabled": true,
+        "webhook_url": "${SLACK_WEBHOOK_URL}",
+        "channel": "#monitoring"
+      }
+    },
+    "thresholds": {
+      "system": {
+        "cpu_usage": 80,
+        "memory_usage": 85,
+        "disk_usage": 90,
+        "network_latency": 1000
+      },
+      "application": {
+        "error_rate": 0.05,
+        "response_time": 1000,
+        "failed_requests": 100
+      },
+      "business": {
+        "user_drop": 20,
+        "revenue_drop": 15,
+        "churn_rate": 5
+      }
+    }
+  },
+
+  "storage": {
+    "raw_data": {
+      "retention_days": 90,
+      "compression": true
+    },
+    "aggregated_data": {
+      "retention_days": 365,
+      "compression": true
+    },
+    "reports": {
+      "retention_days": 180,
+      "formats": ["json", "csv", "pdf"]
+    }
+  },
+
+  "integrations": {
+    "google_analytics": {
+      "enabled": true,
+      "tracking_id": "${GA_TRACKING_ID}",
+      "metrics": [
+        "pageviews",
+        "sessions",
+        "users",
+        "bounce_rate"
+      ]
+    },
+    "mixpanel": {
+      "enabled": true,
+      "project_token": "${MIXPANEL_TOKEN}",
+      "track_events": [
+        "user_signup",
+        "model_training",
+        "prediction_made"
+      ]
+    }
+  },
+
+  "export": {
+    "scheduled": {
+      "enabled": true,
+      "frequency": "0 0 * * *",
+      "formats": ["json", "csv"],
+      "destinations": {
+        "s3": {
+          "enabled": true,
+          "bucket": "headai-analytics",
+          "prefix": "reports/"
+        },
+        "email": {
+          "enabled": true,
+          "recipients": ["reports@headai.com"],
+          "subject_prefix": "[HeadAI Analytics]"
+        }
+      }
+    },
+    "api": {
+      "enabled": true,
+      "rate_limit": 100,
+      "formats": ["json", "csv"]
+    }
+  },
+
+  "machine_learning": {
+    "anomaly_detection": {
+      "enabled": true,
+      "algorithms": ["isolation_forest", "dbscan"],
+      "sensitivity": 0.95
+    },
+    "forecasting": {
+      "enabled": true,
+      "models": ["prophet", "arima"],
+      "horizon_days": 30
+    }
+  }
+}
