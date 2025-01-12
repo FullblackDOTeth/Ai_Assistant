@@ -1,0 +1,21 @@
+name: "Head AI CodeQL Config"
+
+disable-default-queries: false
+
+queries:
+  - name: Security and Quality
+    uses: security-and-quality
+
+paths:
+  - src
+  - tests
+paths-ignore:
+  - tests/data
+  - '**/*.test.py'
+  - '**/*.spec'
+
+query-filters:
+  - exclude:
+      problem.severity:
+        - note
+        - warning
