@@ -1,0 +1,28 @@
+cluster.name: "headai-monitoring"
+node.name: "node-1"
+network.host: 0.0.0.0
+http.port: 9200
+discovery.type: single-node
+
+# Security settings
+xpack.security.enabled: true
+xpack.security.transport.ssl.enabled: true
+xpack.security.transport.ssl.verification_mode: certificate
+xpack.security.transport.ssl.keystore.path: elastic-certificates.p12
+xpack.security.transport.ssl.truststore.path: elastic-certificates.p12
+
+# Memory settings
+bootstrap.memory_lock: true
+
+# Path settings
+path.data: /var/lib/elasticsearch
+path.logs: /var/log/elasticsearch
+
+# Snapshot settings
+path.repo: /var/lib/elasticsearch/backup
+
+# Performance settings
+indices.memory.index_buffer_size: 30%
+indices.queries.cache.size: 20%
+thread_pool.write.size: 32
+thread_pool.write.queue_size: 1000

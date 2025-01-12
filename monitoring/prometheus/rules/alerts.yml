@@ -1,0 +1,102 @@
+groups:
+  - name: HeadAI
+    rules:
+      # High CPU Usage
+      - alert: HighCPUUsage
+        expr: avg(rate(process_cpu_seconds_total[5m])) * 100 > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: High CPU usage detected
+          description: CPU usage is above 80% for 5 minutes
+
+      # High Memory Usage
+      - alert: HighMemoryUsage
+        expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: High memory usage detected
+          description: Memory usage is above 85% for 5 minutes
+
+      # Disk Space Running Out
+      - alert: LowDiskSpace
+        expr: (node_filesystem_size_bytes - node_filesystem_free_bytes) / node_filesystem_size_bytes * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: Low disk space
+          description: Disk usage is above 85%
+
+      # High API Error Rate
+      - alert: HighErrorRate
+        expr: rate(http_requests_total{status=~"5.."}[5m]) / rate(http_requests_total[5m]) * 100 > 5
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: High API error rate
+          description: Error rate is above 5% for 5 minutes
+
+      # Slow API Response Time
+      - alert: SlowAPIResponse
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: Slow API response time
+          description: 95th percentile of API response time is above 1 second
+
+      # Database Connection Issues
+      - alert: DatabaseConnectionIssues
+        expr: pg_up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: Database connection lost
+          description: Unable to connect to PostgreSQL database
+
+      # Redis Connection Issues
+      - alert: RedisConnectionIssues
+        expr: redis_up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: Redis connection lost
+          description: Unable to connect to Redis
+
+      # High Database Load
+      - alert: HighDatabaseLoad
+        expr: rate(pg_stat_database_xact_commit[5m]) + rate(pg_stat_database_xact_rollback[5m]) > 1000
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: High database load
+          description: Database is processing more than 1000 transactions per second
+
+      # Instance Down
+      - alert: InstanceDown
+        expr: up == 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: Instance down
+          description: "Instance {{ $labels.instance }} has been down for more than 5 minutes"
+
+      # High JWT Token Rejection Rate
+      - alert: HighJWTRejectionRate
+        expr: rate(jwt_token_rejections_total[5m]) / rate(jwt_token_validations_total[5m]) * 100 > 10
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: High JWT token rejection rate
+          description: More than 10% of JWT tokens are being rejected

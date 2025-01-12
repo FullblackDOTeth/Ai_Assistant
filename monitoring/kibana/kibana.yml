@@ -1,0 +1,25 @@
+server.name: kibana
+server.host: "0.0.0.0"
+server.port: 5601
+
+elasticsearch.hosts: [ "http://elasticsearch:9200" ]
+elasticsearch.username: "${ELASTIC_USER}"
+elasticsearch.password: "${ELASTIC_PASSWORD}"
+
+monitoring.ui.container.elasticsearch.enabled: true
+
+xpack.security.enabled: true
+xpack.security.encryptionKey: "${KIBANA_ENCRYPTION_KEY}"
+xpack.encryptedSavedObjects.encryptionKey: "${KIBANA_ENCRYPTION_KEY}"
+
+xpack.reporting.enabled: true
+xpack.reporting.capture.browser.chromium.disableSandbox: true
+
+logging.dest: /var/log/kibana/kibana.log
+logging.json: true
+
+# Performance settings
+elasticsearch.requestTimeout: 30000
+elasticsearch.shardTimeout: 30000
+optimize.bundleFilter: "!tests"
+optimize.useBundleCache: true
