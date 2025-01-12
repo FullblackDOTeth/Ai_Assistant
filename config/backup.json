@@ -1,0 +1,166 @@
+{
+  "backup": {
+    "root_dir": "/var/backups/headai",
+    "retention_days": 30,
+    "directories": [
+      "/opt/headai/uploads",
+      "/opt/headai/models",
+      "/opt/headai/configs"
+    ],
+    "schedule": {
+      "full_backup": "0 0 * * *",      // Daily at midnight
+      "incremental": "0 */6 * * *",    // Every 6 hours
+      "transaction_log": "*/15 * * * *" // Every 15 minutes
+    }
+  },
+
+  "database": {
+    "name": "headai_db",
+    "user": "headai_user",
+    "password": "${DB_PASSWORD}",
+    "host": "localhost",
+    "port": 5432,
+    "options": {
+      "compression": true,
+      "format": "custom",
+      "jobs": 4,
+      "exclude_tables": []
+    }
+  },
+
+  "redis": {
+    "host": "localhost",
+    "port": 6379,
+    "password": "${REDIS_PASSWORD}",
+    "rdb_path": "/var/lib/redis",
+    "options": {
+      "save_frequency": 900,
+      "compression": true
+    }
+  },
+
+  "aws": {
+    "region": "us-east-1",
+    "backup_bucket": "headai-backups",
+    "options": {
+      "storage_class": "STANDARD_IA",
+      "encryption": "AES256",
+      "versioning": true
+    }
+  },
+
+  "monitoring": {
+    "alerts": {
+      "backup_failure": {
+        "enabled": true,
+        "channels": ["email", "slack"],
+        "retry_count": 3,
+        "retry_delay": 300
+      },
+      "space_warning": {
+        "enabled": true,
+        "threshold_percent": 80,
+        "channels": ["email"]
+      }
+    },
+    "logging": {
+      "level": "INFO",
+      "file": "/var/log/headai/backup.log",
+      "max_size": "100M",
+      "retention": 30
+    }
+  },
+
+  "recovery": {
+    "root_dir": "/var/recovery/headai",
+    "directories": [
+      "/opt/headai/uploads",
+      "/opt/headai/models",
+      "/opt/headai/configs"
+    ],
+    "verification": {
+      "enabled": true,
+      "timeout": 3600,
+      "checks": {
+        "database": true,
+        "redis": true,
+        "files": true
+      }
+    },
+    "notifications": {
+      "success": {
+        "enabled": true,
+        "channels": ["email", "slack"]
+      },
+      "failure": {
+        "enabled": true,
+        "channels": ["email", "slack", "pagerduty"]
+      }
+    }
+  },
+
+  "disaster_recovery": {
+    "rto": 4,     // Recovery Time Objective in hours
+    "rpo": 1,     // Recovery Point Objective in hours
+    "sites": {
+      "primary": {
+        "region": "us-east-1",
+        "backup_bucket": "headai-backups-primary"
+      },
+      "secondary": {
+        "region": "us-west-2",
+        "backup_bucket": "headai-backups-secondary"
+      }
+    },
+    "replication": {
+      "enabled": true,
+      "frequency": "*/30 * * * *",  // Every 30 minutes
+      "method": "cross-region"
+    }
+  },
+
+  "security": {
+    "encryption": {
+      "enabled": true,
+      "algorithm": "AES-256-GCM",
+      "key_rotation": {
+        "enabled": true,
+        "frequency": "0 0 1 * *"  // Monthly
+      }
+    },
+    "access_control": {
+      "roles": {
+        "backup_operator": {
+          "permissions": ["read", "write", "execute"],
+          "resources": ["backups", "logs"]
+        },
+        "recovery_operator": {
+          "permissions": ["read", "execute"],
+          "resources": ["backups", "recovery"]
+        }
+      }
+    }
+  },
+
+  "compliance": {
+    "retention": {
+      "minimum_days": 30,
+      "maximum_days": 365,
+      "legal_hold": {
+        "enabled": false,
+        "duration": "indefinite"
+      }
+    },
+    "audit": {
+      "enabled": true,
+      "log_retention": 365,
+      "fields": [
+        "timestamp",
+        "action",
+        "user",
+        "status",
+        "details"
+      ]
+    }
+  }
+}
