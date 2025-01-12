@@ -1,0 +1,141 @@
+dependency_security:
+  # Package management
+  package_management:
+    allowed_sources:
+      - "https://pypi.org/simple"
+      - "https://files.pythonhosted.org"
+    require_hashes: true
+    require_signatures: true
+    lockfile_required: true
+    auto_update:
+      enabled: true
+      security_only: true
+      schedule: "0 0 * * 0"  # Weekly
+
+  # Version control
+  version_control:
+    require_signed_commits: true
+    require_linear_history: true
+    protected_branches:
+      - main
+      - develop
+      - release/*
+    branch_protection:
+      require_pull_request: true
+      required_reviews: 2
+      dismiss_stale_reviews: true
+      require_status_checks: true
+
+  # Dependency scanning
+  scanning:
+    pre_commit:
+      enabled: true
+      fail_on:
+        - HIGH
+        - CRITICAL
+    continuous:
+      enabled: true
+      schedule: "0 0 * * *"  # Daily
+      notify_on:
+        - MEDIUM
+        - HIGH
+        - CRITICAL
+    tools:
+      - safety
+      - bandit
+      - snyk
+      - dependabot
+    ignore_paths:
+      - "tests/"
+      - "docs/"
+      - "examples/"
+
+  # License compliance
+  license_compliance:
+    allowed_licenses:
+      - MIT
+      - Apache-2.0
+      - BSD-3-Clause
+      - BSD-2-Clause
+      - ISC
+      - Python-2.0
+    forbidden_licenses:
+      - GPL-2.0
+      - GPL-3.0
+      - AGPL-3.0
+    unknown_license_action: block
+
+  # Container security
+  container_security:
+    base_images:
+      allowed:
+        - "python:3.9-slim"
+        - "python:3.10-slim"
+        - "python:3.11-slim"
+      forbidden:
+        - "python:latest"
+        - "python:alpine"
+    scan_frequency: daily
+    scan_on_build: true
+    minimal_base_image: true
+    no_root_user: true
+
+  # Build security
+  build_security:
+    isolated_builds: true
+    reproducible_builds: true
+    build_time_dependencies:
+      pin_versions: true
+      audit_on_change: true
+    artifact_signing: true
+    build_cache:
+      enabled: true
+      ttl_days: 7
+
+  # Update policy
+  update_policy:
+    automatic_updates:
+      patch: true
+      minor: false
+      major: false
+    update_window:
+      day: "Sunday"
+      time: "00:00"
+    rollback_plan:
+      required: true
+      test_procedure: true
+    notification:
+      channels:
+        - email
+        - slack
+      recipients:
+        - security@headai.com
+        - devops@headai.com
+
+  # Monitoring
+  monitoring:
+    alerts:
+      new_vulnerabilities: true
+      policy_violations: true
+      failed_builds: true
+    metrics:
+      dependency_age: true
+      vulnerability_count: true
+      policy_compliance: true
+    reporting:
+      frequency: weekly
+      include_metrics: true
+      include_recommendations: true
+
+  # Emergency procedures
+  emergency_procedures:
+    vulnerability_response:
+      critical_update_window: 24  # hours
+      high_update_window: 72  # hours
+      medium_update_window: 168  # hours
+    incident_response:
+      team_contacts:
+        - security_lead@headai.com
+        - devops_lead@headai.com
+      escalation_procedure: true
+      documentation_required: true

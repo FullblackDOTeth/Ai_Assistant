@@ -1,4 +1,4 @@
-name: Security Scan
+name: Security Checks
 
 on:
   push:
@@ -6,56 +6,64 @@ on:
   pull_request:
     branches: [ main, develop ]
   schedule:
-    - cron: '0 0 * * 0'  # Run weekly
-  workflow_dispatch:
+    - cron: '0 0 * * *'  # Daily at midnight
 
 jobs:
-  security:
+  security-checks:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
-        cache: 'pip'
-
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install safety bandit
-
-    - name: Run dependency scan
-      run: |
-        safety check
-
-    - name: Run security scan
-      run: |
-        bandit -r src/ -f json -o security-report.json
-
-    - name: Upload security report
-      uses: actions/upload-artifact@v3
-      with:
-        name: security-report
-        path: security-report.json
-
-  codeql:
-    runs-on: ubuntu-latest
-    permissions:
-      security-events: write
-      actions: read
-      contents: read
-
-    steps:
-    - uses: actions/checkout@v3
-
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v2
-      with:
-        languages: python
-
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v2
-      with:
-        category: "/language:python"
+      - uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install safety bandit semgrep trivy
+          
+      - name: Run Safety check
+        run: safety check
+        
+      - name: Run Bandit
+        run: bandit -r src/ -c security/config/bandit.yml
+        
+      - name: Run Semgrep
+        run: semgrep scan --config=auto
+        
+      - name: Run Trivy filesystem scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          
+      - name: Run OWASP Dependency Check
+        uses: dependency-check/Dependency-Check_Action@main
+        with:
+          project: 'HeadAI'
+          path: '.'
+          format: 'HTML'
+          
+      - name: Run security audit script
+        run: python security/scripts/security_audit.py security/config/security.yml
+        
+      - name: Upload security scan results
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: trivy-results.sarif
+          
+      - name: Run system hardening
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: python security/scripts/harden_system.py security/config/security.yml
+        
+      - name: Notify on failure
+        if: failure()
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_MESSAGE: 'Security checks failed! Please review the logs.'
+          SLACK_COLOR: '#FF0000'
