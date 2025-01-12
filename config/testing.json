@@ -1,0 +1,258 @@
+{
+  "database": {
+    "name": "headai_test",
+    "user": "headai_test",
+    "password": "${TEST_DB_PASSWORD}",
+    "host": "localhost",
+    "port": 5432,
+    "pool_size": 10
+  },
+
+  "redis": {
+    "host": "localhost",
+    "port": 6379,
+    "password": "${TEST_REDIS_PASSWORD}",
+    "db": 1
+  },
+
+  "unit_testing": {
+    "test_paths": [
+      "tests/unit/api",
+      "tests/unit/models",
+      "tests/unit/services"
+    ],
+    "coverage": {
+      "enabled": true,
+      "minimum": 80,
+      "exclude": [
+        "tests/*",
+        "setup.py"
+      ]
+    },
+    "hypothesis": {
+      "max_examples": 100,
+      "deadline": 1000
+    }
+  },
+
+  "integration_testing": {
+    "api": {
+      "base_url": "http://localhost:8000",
+      "timeout": 30,
+      "endpoints": [
+        {
+          "name": "create_user",
+          "method": "POST",
+          "url": "/api/v1/users",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "username": "test_user",
+            "email": "test@example.com"
+          }
+        },
+        {
+          "name": "get_user",
+          "method": "GET",
+          "url": "/api/v1/users/{user_id}",
+          "headers": {
+            "Authorization": "Bearer {token}"
+          }
+        }
+      ]
+    },
+    "database": {
+      "queries": [
+        {
+          "name": "select_users",
+          "sql": "SELECT * FROM users WHERE active = true"
+        },
+        {
+          "name": "update_user",
+          "sql": "UPDATE users SET last_login = NOW() WHERE id = :user_id"
+        }
+      ]
+    },
+    "cache": {
+      "operations": [
+        {
+          "name": "set_user",
+          "type": "set",
+          "key": "user:{user_id}",
+          "value": "{user_data}",
+          "ttl": 3600
+        },
+        {
+          "name": "get_user",
+          "type": "get",
+          "key": "user:{user_id}"
+        }
+      ]
+    }
+  },
+
+  "e2e_testing": {
+    "browser": "chrome",
+    "base_url": "http://localhost:3000",
+    "screenshot_path": "tests/screenshots",
+    "scenarios": [
+      {
+        "name": "user_login",
+        "steps": [
+          {
+            "name": "navigate_to_login",
+            "action": "navigate",
+            "url": "/login"
+          },
+          {
+            "name": "enter_username",
+            "action": "input",
+            "selector": "#username",
+            "value": "test_user"
+          },
+          {
+            "name": "enter_password",
+            "action": "input",
+            "selector": "#password",
+            "value": "test_password"
+          },
+          {
+            "name": "click_login",
+            "action": "click",
+            "selector": "#login-button",
+            "screenshot": true
+          },
+          {
+            "name": "verify_dashboard",
+            "action": "wait",
+            "seconds": 2,
+            "screenshot": true
+          }
+        ]
+      }
+    ]
+  },
+
+  "performance_testing": {
+    "load": {
+      "duration": 300,
+      "users": 100,
+      "spawn_rate": 10,
+      "host": "http://localhost:8000",
+      "endpoints": [
+        "/api/v1/users",
+        "/api/v1/products",
+        "/api/v1/orders"
+      ]
+    },
+    "stress": {
+      "target": "main_service",
+      "start_users": 100,
+      "max_users": 1000,
+      "step": 100,
+      "duration": 60
+    },
+    "endurance": {
+      "duration": 3600,
+      "interval": 60,
+      "target_load": 50
+    }
+  },
+
+  "security_testing": {
+    "vulnerability": {
+      "scan_type": "full",
+      "target": "http://localhost:8000",
+      "include_paths": [
+        "/api",
+        "/admin"
+      ],
+      "exclude_paths": [
+        "/health",
+        "/metrics"
+      ]
+    },
+    "pentest": {
+      "modules": [
+        "sql_injection",
+        "xss",
+        "csrf",
+        "auth_bypass"
+      ],
+      "intensity": "medium"
+    },
+    "compliance": {
+      "checks": [
+        {
+          "name": "ssl_check",
+          "type": "ssl",
+          "target": "https://localhost:8000"
+        },
+        {
+          "name": "security_headers",
+          "type": "headers",
+          "target": "http://localhost:8000"
+        },
+        {
+          "name": "auth_check",
+          "type": "auth",
+          "target": "/api/v1/secure"
+        }
+      ]
+    }
+  },
+
+  "test_data": {
+    "database": {
+      "users": [
+        {
+          "username": "test_user_1",
+          "email": "test1@example.com",
+          "active": true
+        },
+        {
+          "username": "test_user_2",
+          "email": "test2@example.com",
+          "active": false
+        }
+      ],
+      "products": [
+        {
+          "name": "Test Product 1",
+          "price": 99.99,
+          "stock": 100
+        },
+        {
+          "name": "Test Product 2",
+          "price": 149.99,
+          "stock": 50
+        }
+      ]
+    },
+    "cache": {
+      "user:1": {
+        "id": 1,
+        "username": "test_user_1",
+        "preferences": {
+          "theme": "dark",
+          "notifications": true
+        }
+      },
+      "product:1": {
+        "id": 1,
+        "name": "Test Product 1",
+        "cache_time": "2025-01-12T14:30:00Z"
+      }
+    }
+  },
+
+  "reporting": {
+    "formats": ["html", "json"],
+    "output_dir": "tests/reports",
+    "notify": {
+      "email": "qa@headai.com",
+      "slack": "#qa-alerts"
+    }
+  }
+}
