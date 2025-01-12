@@ -1,0 +1,175 @@
+{
+  "database": {
+    "name": "headai_security",
+    "user": "headai_security",
+    "password": "${DB_PASSWORD}",
+    "host": "localhost",
+    "port": 5432
+  },
+
+  "api_keys": {
+    "shodan": "${SHODAN_API_KEY}",
+    "nuclei": "${NUCLEI_API_KEY}"
+  },
+
+  "metasploit": {
+    "host": "localhost",
+    "port": 55553,
+    "username": "msf",
+    "password": "${MSF_PASSWORD}",
+    "import_file": "data/vulnerabilities.xml",
+    "exploit_timeout": 300
+  },
+
+  "openvas": {
+    "host": "localhost",
+    "port": 9390,
+    "username": "admin",
+    "password": "${OPENVAS_PASSWORD}"
+  },
+
+  "zap": {
+    "proxy_url": "http://localhost:8080",
+    "api_key": "${ZAP_API_KEY}",
+    "contexts": ["default"]
+  },
+
+  "nmap": {
+    "scripts": [
+      "vuln",
+      "auth",
+      "default",
+      "discovery",
+      "version"
+    ],
+    "timing_template": 4
+  },
+
+  "custom_exploits": {
+    "path": "security/exploits/custom_exploits.json",
+    "timeout": 300
+  },
+
+  "scanning": {
+    "concurrent_scans": 5,
+    "retry_attempts": 3,
+    "retry_delay": 60,
+    "scan_timeout": 3600,
+    "excluded_hosts": [],
+    "excluded_ports": [
+      22,
+      3389
+    ]
+  },
+
+  "reporting": {
+    "formats": ["pdf", "html", "json"],
+    "email": {
+      "enabled": true,
+      "recipients": ["security@headai.com"],
+      "severity_threshold": "high"
+    },
+    "storage": {
+      "local_path": "reports/security",
+      "s3_bucket": "headai-security-reports",
+      "retention_days": 90
+    }
+  },
+
+  "alerts": {
+    "enabled": true,
+    "channels": {
+      "email": {
+        "enabled": true,
+        "recipients": ["security-alerts@headai.com"]
+      },
+      "slack": {
+        "enabled": true,
+        "webhook_url": "${SLACK_WEBHOOK_URL}",
+        "channel": "#security-alerts"
+      }
+    },
+    "thresholds": {
+      "critical": {
+        "vulnerabilities": 1,
+        "successful_exploits": 1
+      },
+      "high": {
+        "vulnerabilities": 5,
+        "successful_exploits": 3
+      },
+      "medium": {
+        "vulnerabilities": 10,
+        "successful_exploits": 5
+      }
+    }
+  },
+
+  "compliance": {
+    "frameworks": [
+      "owasp-top-10",
+      "cwe-top-25",
+      "pci-dss",
+      "hipaa"
+    ],
+    "checks": {
+      "ssl_tls": true,
+      "password_policy": true,
+      "access_control": true,
+      "data_encryption": true,
+      "input_validation": true
+    }
+  },
+
+  "remediation": {
+    "auto_fix": {
+      "enabled": false,
+      "approved_fixes": []
+    },
+    "documentation": {
+      "template_path": "templates/remediation",
+      "include_references": true
+    }
+  },
+
+  "monitoring": {
+    "real_time": {
+      "enabled": true,
+      "interval": 300,
+      "metrics": [
+        "failed_logins",
+        "suspicious_requests",
+        "file_changes",
+        "network_anomalies"
+      ]
+    },
+    "scheduled": {
+      "vulnerability_scan": "0 0 * * *",
+      "penetration_test": "0 0 * * 0",
+      "compliance_check": "0 0 1 * *"
+    }
+  },
+
+  "tools": {
+    "enabled": [
+      "nmap",
+      "openvas",
+      "zap",
+      "metasploit",
+      "nuclei",
+      "custom"
+    ],
+    "custom_tools": {
+      "path": "security/tools",
+      "allowed_extensions": [".py", ".sh"]
+    }
+  },
+
+  "authentication": {
+    "required": true,
+    "methods": ["token", "certificate"],
+    "token_expiry": 3600,
+    "max_attempts": 3,
+    "lockout_duration": 900
+  }
+}
