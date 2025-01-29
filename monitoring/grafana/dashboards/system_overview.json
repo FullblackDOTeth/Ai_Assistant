@@ -1,0 +1,170 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "id": 1,
+  "links": [],
+  "panels": [
+    {
+      "title": "System Overview",
+      "type": "row",
+      "panels": [
+        {
+          "title": "CPU Usage",
+          "type": "gauge",
+          "datasource": "Prometheus",
+          "targets": [
+            {
+              "expr": "avg(rate(process_cpu_seconds_total[5m])) * 100",
+              "refId": "A"
+            }
+          ],
+          "options": {
+            "maxValue": 100,
+            "minValue": 0,
+            "thresholds": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 60 },
+              { "color": "red", "value": 80 }
+            ]
+          }
+        },
+        {
+          "title": "Memory Usage",
+          "type": "gauge",
+          "datasource": "Prometheus",
+          "targets": [
+            {
+              "expr": "(node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes * 100",
+              "refId": "A"
+            }
+          ],
+          "options": {
+            "maxValue": 100,
+            "minValue": 0,
+            "thresholds": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 70 },
+              { "color": "red", "value": 85 }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "title": "API Performance",
+      "type": "row",
+      "panels": [
+        {
+          "title": "Request Rate",
+          "type": "graph",
+          "datasource": "Prometheus",
+          "targets": [
+            {
+              "expr": "rate(http_requests_total[5m])",
+              "legendFormat": "{{status}}",
+              "refId": "A"
+            }
+          ]
+        },
+        {
+          "title": "Response Time",
+          "type": "graph",
+          "datasource": "Prometheus",
+          "targets": [
+            {
+              "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m]))",
+              "legendFormat": "p95",
+              "refId": "A"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Database",
+      "type": "row",
+      "panels": [
+        {
+          "title": "Active Connections",
+          "type": "graph",
+          "datasource": "Prometheus",
+          "targets": [
+            {
+              "expr": "pg_stat_activity_count",
+              "refId": "A"
+            }
+          ]
+        },
+        {
+          "title": "Transaction Rate",
+          "type": "graph",
+          "datasource": "Prometheus",
+          "targets": [
+            {
+              "expr": "rate(pg_stat_database_xact_commit[5m]) + rate(pg_stat_database_xact_rollback[5m])",
+              "refId": "A"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Security",
+      "type": "row",
+      "panels": [
+        {
+          "title": "Authentication Success Rate",
+          "type": "graph",
+          "datasource": "Prometheus",
+          "targets": [
+            {
+              "expr": "rate(authentication_success_total[5m]) / rate(authentication_attempts_total[5m]) * 100",
+              "refId": "A"
+            }
+          ]
+        },
+        {
+          "title": "JWT Token Validation Rate",
+          "type": "graph",
+          "datasource": "Prometheus",
+          "targets": [
+            {
+              "expr": "rate(jwt_token_validations_total[5m])",
+              "refId": "A"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "refresh": "10s",
+  "schemaVersion": 27,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "System Overview",
+  "uid": "system_overview",
+  "version": 1
+}

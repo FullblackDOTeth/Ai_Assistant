@@ -1,0 +1,53 @@
+name: VS Code CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        node-version: [16.x, 18.x]
+    
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+
+    - name: Install Node.js dependencies
+      if: hashFiles('**/package.json') != ''
+      run: |
+        npm install
+
+    - name: Lint
+      if: hashFiles('**/package.json') != ''
+      run: |
+        if npm run | grep -q "^  lint"; then
+          npm run lint
+        elif npm run | grep -q "^  eslint"; then
+          npm run eslint
+        fi
+
+    - name: Build
+      if: hashFiles('**/package.json') != ''
+      run: |
+        if npm run | grep -q "^  build"; then
+          npm run build
+        fi
+
+    - name: Run Node.js tests
+      if: hashFiles('**/package.json') != ''
+      run: |
+        if npm run | grep -q "^  test"; then
+          npm run test
+        fi

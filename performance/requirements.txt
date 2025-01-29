@@ -1,0 +1,59 @@
+# Profiling Tools
+cProfile
+line_profiler>=3.5.1
+memory-profiler>=0.60.0
+py-spy>=0.3.12
+guppy3>=3.1.2
+objgraph>=3.5.0
+
+# Performance Testing
+locust>=2.15.1
+apache-benchmark>=0.16.6
+wrk>=4.2.0
+
+# Database
+sqlalchemy>=2.0.0
+psycopg2-binary>=2.9.6
+asyncpg>=0.27.0
+
+# Caching
+redis>=4.5.4
+pymemcache>=4.0.0
+cachetools>=5.3.0
+
+# Monitoring
+prometheus-client>=0.17.0
+statsd>=4.0.1
+psutil>=5.9.5
+
+# Async Support
+aiohttp>=3.8.4
+asyncio>=3.4.3
+uvloop>=0.17.0
+
+# Data Processing
+pandas>=2.0.2
+numpy>=1.24.3
+
+# Visualization
+matplotlib>=3.7.1
+seaborn>=0.12.2
+plotly>=5.14.1
+
+# Compression
+lz4>=4.3.2
+zstandard>=0.21.0
+
+# Testing
+pytest>=7.3.1
+pytest-benchmark>=4.0.0
+pytest-profiling>=1.7.0
+
+# Reporting
+jinja2>=3.1.2
+pdfkit>=1.0.0
+
+# Utilities
+tqdm>=4.65.0
+python-dotenv>=1.0.0
+pytz>=2023.3

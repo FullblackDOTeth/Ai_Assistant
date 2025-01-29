@@ -1,0 +1,22 @@
+# Advanced AI Models
+torch==2.1.0
+transformers==4.30.2
+cohere==4.32
+
+# Advanced Research
+wikipedia==1.4.0
+scholarly==1.7.11
+stackapi==0.2.0
+
+# Web Automation
+selenium==4.11.2
+webdriver-manager==4.0.0
+
+# Crypto Support
+web3==6.11.3
+pycryptodome==3.19.0
+cryptography==41.0.7
+
+# Voice Support (Optional)
+# pyttsx3==2.90
+# speechrecognition==3.10.0

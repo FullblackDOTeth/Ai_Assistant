@@ -1,0 +1,18 @@
+# UI
+customtkinter==5.2.0
+pillow==10.0.0  # Required by customtkinter
+
+# Core AI
+openai==1.0.0
+python-dotenv==1.0.0
+
+# Basic Research
+requests==2.31.0
+beautifulsoup4==4.12.2
+duckduckgo-search==3.9.3
+
+# Text Processing
+nltk==3.8.1
+
+# Utilities
+numpy==1.24.3

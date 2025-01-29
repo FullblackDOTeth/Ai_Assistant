@@ -1,0 +1,175 @@
+security:
+  # Authentication settings
+  auth:
+    session_timeout: 3600  # 1 hour
+    max_failed_attempts: 5
+    lockout_duration: 900  # 15 minutes
+    password_policy:
+      min_length: 12
+      require_uppercase: true
+      require_lowercase: true
+      require_numbers: true
+      require_special: true
+      max_age_days: 90
+      prevent_reuse: 5  # Remember last 5 passwords
+    mfa:
+      enabled: true
+      methods:
+        - totp
+        - email
+        - sms
+      grace_period: 7  # Days to enable MFA after account creation
+
+  # JWT settings
+  jwt:
+    algorithm: RS256
+    access_token_expiry: 3600  # 1 hour
+    refresh_token_expiry: 604800  # 7 days
+    issuer: "headai.com"
+    audience: "headai-api"
+    key_rotation_days: 30
+
+  # Rate limiting
+  rate_limit:
+    enabled: true
+    default_limit: 100  # requests per window
+    window_size: 3600  # 1 hour
+    whitelist:
+      - "127.0.0.1"
+      - "internal-service.headai.com"
+    endpoints:
+      "/api/auth/*":
+        limit: 10
+        window_size: 300  # 5 minutes
+      "/api/admin/*":
+        limit: 50
+        window_size: 3600
+
+  # CORS settings
+  cors:
+    allowed_origins:
+      - "https://headai.com"
+      - "https://*.headai.com"
+    allowed_methods:
+      - GET
+      - POST
+      - PUT
+      - DELETE
+    allowed_headers:
+      - Authorization
+      - Content-Type
+    expose_headers:
+      - X-Request-ID
+    max_age: 3600
+    allow_credentials: true
+
+  # Encryption
+  encryption:
+    algorithm: AES-256-GCM
+    key_size: 256
+    key_derivation: PBKDF2
+    iterations: 100000
+    salt_size: 32
+    rotation_period_days: 90
+
+  # File security
+  file_security:
+    allowed_extensions:
+      - .jpg
+      - .png
+      - .pdf
+      - .doc
+      - .docx
+    max_size_mb: 10
+    scan_uploads: true
+    virus_scan:
+      enabled: true
+      action: quarantine  # or 'delete'
+
+  # API security
+  api_security:
+    require_https: true
+    hsts_enabled: true
+    hsts_max_age: 31536000  # 1 year
+    frame_options: DENY
+    content_security_policy:
+      default_src: "'self'"
+      script_src: "'self' 'unsafe-inline'"
+      style_src: "'self' 'unsafe-inline'"
+      img_src: "'self' data: https:"
+    security_headers:
+      - X-Content-Type-Options: nosniff
+      - X-Frame-Options: DENY
+      - X-XSS-Protection: "1; mode=block"
+
+  # Audit logging
+  audit:
+    enabled: true
+    log_level: INFO
+    events:
+      - authentication
+      - authorization
+      - data_access
+      - configuration_change
+      - security_event
+    retention_days: 365
+    storage:
+      type: elasticsearch
+      index: "headai-audit"
+
+  # Access control
+  access_control:
+    roles:
+      admin:
+        permissions:
+          - "*"
+      manager:
+        permissions:
+          - "read:*"
+          - "write:projects"
+          - "write:datasets"
+          - "delete:own_projects"
+      user:
+        permissions:
+          - "read:own_projects"
+          - "write:own_projects"
+          - "read:public_projects"
+    default_role: user
+    require_approval: true
+
+  # Network security
+  network:
+    allowed_ips:
+      - "10.0.0.0/8"  # Internal network
+      - "172.16.0.0/12"  # VPN network
+    vpn:
+      required: true
+      protocols:
+        - OpenVPN
+        - WireGuard
+    firewall:
+      enabled: true
+      default_policy: DROP
+      rules:
+        - port: 443
+          action: ALLOW
+        - port: 80
+          action: REDIRECT
+          target_port: 443
+
+  # Vulnerability scanning
+  vulnerability_scan:
+    enabled: true
+    schedule: "0 0 * * *"  # Daily at midnight
+    scanners:
+      - dependency_check
+      - container_scan
+      - code_analysis
+    severity_threshold: MEDIUM
+    fail_on_threshold: true
+    notify_on:
+      - HIGH
+      - CRITICAL
+    ignore_paths:
+      - "tests/"
+      - "docs/"

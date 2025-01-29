@@ -1,0 +1,85 @@
+environment: development
+debug: true
+log_level: DEBUG
+
+# Database Configuration
+database:
+  host: localhost
+  port: 5432
+  name: head_ai_dev
+  user: dev_user
+  ssl_mode: disable
+
+# API Configuration
+api:
+  host: 0.0.0.0
+  port: 8000
+  base_url: http://localhost:8000
+  enable_docs: true
+  cors_origins: ["*"]
+
+# Monitoring Configuration
+monitoring:
+  system_check_interval: 5
+  error_tracking: true
+  performance_monitoring: true
+  log_retention_days: 30
+
+# Feature Flags
+features:
+  experimental: true
+  beta_features: true
+  debug_tools: true
+
+# Security
+security:
+  jwt_expiry: 24h
+  refresh_token_expiry: 7d
+  password_reset_expiry: 1h
+  rate_limit:
+    enabled: false
+    requests_per_minute: 100
+
+# Cache Configuration
+cache:
+  type: local
+  max_size: 1GB
+  ttl: 1h
+
+# Storage
+storage:
+  type: local
+  path: ./data/dev
+  backup:
+    enabled: false
+    interval: 24h
+
+# Notifications
+notifications:
+  email:
+    enabled: false
+    smtp_host: localhost
+    smtp_port: 1025
+  slack:
+    enabled: false
+    webhook_url: ""
+
+# Analytics
+analytics:
+  enabled: true
+  tracking_id: dev-track-id
+  anonymize_ip: false
+
+# AI Models
+ai_models:
+  default_model: gpt-3.5-turbo
+  temperature: 0.7
+  max_tokens: 2000
+  cache_responses: true
+
+# Development Tools
+dev_tools:
+  hot_reload: true
+  debug_toolbar: true
+  query_analyzer: true
+  profile_endpoints: true

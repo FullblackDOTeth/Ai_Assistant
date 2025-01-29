@@ -1,0 +1,24 @@
+# Core Learning Dependencies
+numpy>=1.24.3
+pandas>=2.0.0
+scikit-learn>=1.3.0
+
+# Topic Modeling
+gensim>=4.3.0
+pyLDAvis>=3.4.0
+
+# Neural Networks & Embeddings
+torch>=2.0.0
+sentence-transformers>=2.2.2
+transformers>=4.30.2
+
+# Vector Search
+faiss-cpu>=1.7.4
+
+# Visualization
+plotly>=5.15.0
+networkx>=3.1
+
+# Utilities
+tqdm>=4.65.0
+joblib>=1.3.0

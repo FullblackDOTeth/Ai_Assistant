@@ -1,0 +1,41 @@
+beta_settings:
+  version: "1.0.0-beta.1"
+  feedback_enabled: true
+  telemetry_enabled: true
+  auto_update_enabled: true
+  crash_reporting: true
+  
+feedback_categories:
+  - installation
+  - performance
+  - usability
+  - features
+  - bugs
+  
+telemetry:
+  collect_usage_stats: true
+  collect_performance_metrics: true
+  collect_error_logs: true
+  
+logging:
+  level: DEBUG
+  file: "logs/beta.log"
+  max_size: 10MB
+  backup_count: 5
+  
+update_settings:
+  check_interval: 86400  # 24 hours
+  channels:
+    - beta
+    - stable
+  auto_install: false
+  
+crash_reporting:
+  enabled: true
+  include_system_info: true
+  max_reports: 10
+  
+beta_features:
+  module_marketplace: true
+  auto_learning: true
+  performance_monitoring: true

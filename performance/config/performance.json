@@ -1,0 +1,163 @@
+{
+  "profiling": {
+    "enabled": true,
+    "sampling_rate": 0.1,
+    "trace_threshold_ms": 100,
+    "memory_threshold_mb": 100,
+    "cpu_threshold_percent": 80,
+    "io_threshold_mb": 10,
+    "network_threshold_mb": 5,
+    "logging": {
+      "level": "INFO",
+      "retention_days": 30,
+      "max_file_size_mb": 100
+    }
+  },
+
+  "database": {
+    "name": "headai_db",
+    "user": "headai_user",
+    "password": "${DB_PASSWORD}",
+    "host": "localhost",
+    "port": 5432,
+    "pool": {
+      "min_size": 10,
+      "max_size": 100,
+      "max_overflow": 10,
+      "timeout": 30
+    },
+    "optimization": {
+      "vacuum_threshold": 0.2,
+      "analyze_threshold": 0.1,
+      "index_threshold": 1000,
+      "cache_hit_ratio": 0.99
+    }
+  },
+
+  "caching": {
+    "redis": {
+      "host": "localhost",
+      "port": 6379,
+      "password": "${REDIS_PASSWORD}",
+      "db": 0,
+      "pool_size": 100,
+      "ttl": {
+        "default": 3600,
+        "user": 1800,
+        "session": 7200,
+        "static": 86400
+      }
+    },
+    "local": {
+      "max_size_mb": 1024,
+      "ttl": 300,
+      "cleanup_interval": 60
+    }
+  },
+
+  "load_testing": {
+    "endpoints": {
+      "/api/v1/predict": {
+        "method": "POST",
+        "users": 100,
+        "duration": 300,
+        "ramp_up": 30,
+        "think_time": 1.0,
+        "payload": {
+          "model": "gpt-4",
+          "max_tokens": 100
+        }
+      },
+      "/api/v1/train": {
+        "method": "POST",
+        "users": 50,
+        "duration": 600,
+        "ramp_up": 60,
+        "think_time": 2.0,
+        "payload": {
+          "dataset_id": "default",
+          "epochs": 10
+        }
+      },
+      "/api/v1/query": {
+        "method": "GET",
+        "users": 200,
+        "duration": 300,
+        "ramp_up": 30,
+        "think_time": 0.5
+      }
+    },
+    "thresholds": {
+      "response_time_p95": 1.0,
+      "response_time_p99": 2.0,
+      "error_rate": 0.01,
+      "requests_per_second": 1000
+    }
+  },
+
+  "monitoring": {
+    "metrics": {
+      "collection_interval": 10,
+      "retention_days": 90,
+      "exporters": [
+        "prometheus",
+        "graphite",
+        "statsd"
+      ]
+    },
+    "alerts": {
+      "cpu_usage": 80,
+      "memory_usage": 85,
+      "disk_usage": 90,
+      "response_time": 1000,
+      "error_rate": 0.05,
+      "notification_channels": [
+        "email",
+        "slack",
+        "pagerduty"
+      ]
+    }
+  },
+
+  "optimization": {
+    "auto_scaling": {
+      "enabled": true,
+      "min_instances": 2,
+      "max_instances": 10,
+      "cpu_threshold": 75,
+      "memory_threshold": 80,
+      "cool_down": 300
+    },
+    "query_optimization": {
+      "enabled": true,
+      "max_execution_time": 1000,
+      "analyze_threshold": 100
+    },
+    "connection_pooling": {
+      "enabled": true,
+      "min_size": 5,
+      "max_size": 50,
+      "max_overflow": 10,
+      "timeout": 30
+    }
+  },
+
+  "resource_limits": {
+    "cpu": {
+      "limit": "4",
+      "request": "2"
+    },
+    "memory": {
+      "limit": "8Gi",
+      "request": "4Gi"
+    },
+    "storage": {
+      "limit": "100Gi",
+      "request": "50Gi"
+    },
+    "network": {
+      "bandwidth_mbps": 1000,
+      "connections": 10000
+    }
+  }
+}

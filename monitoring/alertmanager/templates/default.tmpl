@@ -1,0 +1,22 @@
+{{ define "slack.title" }}
+[{{ .Status | toUpper }}{{ if eq .Status "firing" }}:{{ .Alerts.Firing | len }}{{ end }}] {{ .CommonLabels.alertname }}
+{{ end }}
+
+{{ define "slack.text" }}
+{{ range .Alerts }}
+*Alert:* {{ .Labels.alertname }}
+*Description:* {{ .Annotations.description }}
+*Severity:* {{ .Labels.severity }}
+*Started:* {{ .StartsAt | since }}
+{{ if .Annotations.runbook }}*Runbook:* {{ .Annotations.runbook }}{{ end }}
+{{ end }}
+{{ end }}
+
+{{ define "pagerduty.description" }}
+[{{ .Status | toUpper }}:{{ .Alerts.Firing | len }}] {{ .CommonLabels.alertname }}
+{{ range .Alerts }}
+Alert: {{ .Labels.alertname }}
+Description: {{ .Annotations.description }}
+Severity: {{ .Labels.severity }}
+{{ end }}
+{{ end }}

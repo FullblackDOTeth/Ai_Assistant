@@ -1,0 +1,223 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    - cron: '0 0 * * *'  # Daily at midnight UTC
+  workflow_dispatch:  # Allow manual trigger
+    inputs:
+      debug_enabled:
+        description: 'Run with debug logging'
+        required: false
+        type: boolean
+        default: false
+      test_suite:
+        description: 'Test suite to run'
+        required: false
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - unit
+          - integration
+          - system
+
+env:
+  PYTHON_VERSION: '3.10'
+  COVERAGE_THRESHOLD: 80
+  PYTEST_ADDOPTS: "-v --durations=10 --durations-min=1.0"
+  DEBUG: ${{ github.event.inputs.debug_enabled }}
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python-version: [3.8, 3.9, '3.10']
+      fail-fast: false  # Continue with other tests if one fails
+      max-parallel: 3  # Limit parallel jobs
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0  # Full history for better coverage analysis
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: 'pip'  # Enable pip caching
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest pytest-cov pytest-asyncio pytest-xdist pytest-benchmark
+        pip install -r requirements.txt
+        if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
+      shell: bash
+
+    - name: Run unit tests
+      if: ${{ github.event.inputs.test_suite == 'all' || github.event.inputs.test_suite == 'unit' }}
+      run: |
+        pytest tests/unit/ --cov=src --cov-report=xml -n auto --benchmark-only -v
+      env:
+        PYTHONPATH: ${{ github.workspace }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Run integration tests
+      if: ${{ github.event.inputs.test_suite == 'all' || github.event.inputs.test_suite == 'integration' }}
+      run: |
+        pytest tests/integration/ --cov=src --cov-report=xml -v
+      env:
+        PYTHONPATH: ${{ github.workspace }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Run system tests
+      if: ${{ github.event.inputs.test_suite == 'all' || github.event.inputs.test_suite == 'system' }}
+      run: |
+        pytest tests/system/ --cov=src --cov-report=xml -v
+      env:
+        PYTHONPATH: ${{ github.workspace }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Check coverage threshold
+      run: |
+        coverage report --fail-under=${{ env.COVERAGE_THRESHOLD }}
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        files: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+        fail_ci_if_error: false
+
+    - name: Generate test report
+      if: always()
+      run: |
+        pytest --junitxml=test-results.xml
+        
+    - name: Publish Test Report
+      uses: mikepenz/action-junit-report@v3
+      if: always()
+      with:
+        report_paths: 'test-results.xml'
+        detailed_summary: true
+        include_passed: true
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        cache: 'pip'
+
+    - name: Install linting dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install flake8 black isort mypy pylint
+      
+    - name: Run linters
+      run: |
+        flake8 src tests --statistics --show-source
+        black --check src tests
+        isort --check-only src tests
+        mypy src --strict
+        pylint src tests --recursive=yes
+
+  security:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        cache: 'pip'
+
+    - name: Install security scanning tools
+      run: |
+        python -m pip install --upgrade pip
+        pip install bandit safety pyup-safety
+
+    - name: Run security scans
+      run: |
+        bandit -r src/ -ll -ii -f json -o bandit-results.json
+        safety check -r requirements.txt --full-report
+        safety check -r requirements-dev.txt --full-report || true
+
+    - name: Upload security scan results
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: security-scan-results
+        path: bandit-results.json
+
+  performance:
+    needs: [test]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: Run performance tests
+      run: |
+        pytest tests/performance/ --benchmark-only --benchmark-json=benchmark.json
+
+    - name: Upload benchmark results
+      uses: actions/upload-artifact@v3
+      with:
+        name: benchmark-results
+        path: benchmark.json
+
+  build:
+    needs: [test, lint, security, performance]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        cache: 'pip'
+
+    - name: Install build dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install build wheel twine
+
+    - name: Build package
+      run: |
+        python -m build
+
+    - name: Check distribution
+      run: |
+        twine check dist/*
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: dist
+        path: dist/
+
+    - name: Create Release
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      uses: softprops/action-gh-release@v1
+      with:
+        files: dist/*
+        draft: true
+        prerelease: false

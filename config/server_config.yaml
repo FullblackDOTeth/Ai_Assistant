@@ -1,0 +1,56 @@
+---
+# Head AI Server Configuration
+
+# Server Settings
+server:
+  host: localhost
+  port: 8000
+  admin_mode: true
+  debug: false
+
+# Shell Configuration
+shell:
+  powershell:
+    always_admin: true
+    execution_policy: Unrestricted
+    default_profile: true
+  cmd:
+    always_admin: true
+    default_profile: true
+
+# Process Management
+process:
+  priority: high
+  cpu_affinity: all
+  memory_limit: 16GB
+
+# Security
+security:
+  require_elevation: true
+  allowed_origins:
+    - http://localhost:8000
+    - http://localhost:3000
+  ssl:
+    enabled: true
+    cert_path: certs/server.crt
+    key_path: certs/server.key
+
+# Performance
+performance:
+  cache_enabled: true
+  cache_size: 1GB
+  max_workers: 8
+  timeout: 300
+
+# Logging
+logging:
+  level: INFO
+  file: server.log
+  max_size: 100MB
+  backup_count: 5
+
+# API Settings
+api:
+  rate_limit: 1000
+  timeout: 30
+  max_payload: 10MB

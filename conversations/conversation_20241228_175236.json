@@ -1,0 +1,12 @@
+[
+  {
+    "role": "user",
+    "content": "hi kt what is the weather outside like in paris france",
+    "timestamp": "2024-12-28T17:33:53.183268"
+  },
+  {
+    "role": "assistant",
+    "content": "All AI providers failed to respond",
+    "timestamp": "2024-12-28T17:33:59.366743"
+  }
+]

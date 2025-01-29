@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Head AI Performance Report</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 40px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .section {
+            margin-bottom: 30px;
+        }
+        .metric {
+            margin: 15px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f5f5f5;
+        }
+        .chart {
+            width: 100%;
+            height: 300px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Head AI Performance Report</h1>
+        <p>Generated on: {{ data.timestamp }}</p>
+        <p>Timeframe: {{ data.timeframe }}</p>
+    </div>
+
+    <div class="section">
+        <h2>System Metrics</h2>
+        <div class="metric">
+            <h3>Resource Usage</h3>
+            <table>
+                <tr>
+                    <th>Metric</th>
+                    <th>Value</th>
+                </tr>
+                <tr>
+                    <td>CPU Usage</td>
+                    <td>{{ data.system_metrics.cpu_percent }}%</td>
+                </tr>
+                <tr>
+                    <td>Memory Usage</td>
+                    <td>{{ data.system_metrics.memory_percent }}%</td>
+                </tr>
+                <tr>
+                    <td>Disk Usage</td>
+                    <td>{{ data.system_metrics.disk_percent }}%</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>API Performance</h2>
+        <div class="metric">
+            <h3>Endpoint Usage</h3>
+            <table>
+                <tr>
+                    <th>Endpoint</th>
+                    <th>Total Requests</th>
+                    <th>Avg Response Time</th>
+                    <th>Success Rate</th>
+                </tr>
+                {% for endpoint, metrics in data.api_metrics.items() %}
+                <tr>
+                    <td>{{ endpoint }}</td>
+                    <td>{{ metrics.total_requests }}</td>
+                    <td>{{ "%.2f"|format(metrics.avg_response_time) }}ms</td>
+                    <td>{{ "%.2f"|format(metrics.success_rate * 100) }}%</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>User Activity</h2>
+        <div class="metric">
+            <h3>User Metrics</h3>
+            <table>
+                <tr>
+                    <th>Metric</th>
+                    <th>Value</th>
+                </tr>
+                <tr>
+                    <td>Active Users</td>
+                    <td>{{ data.user_metrics.active_users }}</td>
+                </tr>
+                <tr>
+                    <td>Total Sessions</td>
+                    <td>{{ data.user_metrics.total_sessions }}</td>
+                </tr>
+                <tr>
+                    <td>Avg Session Duration</td>
+                    <td>{{ "%.2f"|format(data.user_metrics.avg_session_duration) }}s</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Model Performance</h2>
+        <div class="metric">
+            <h3>Model Metrics</h3>
+            <table>
+                <tr>
+                    <th>Model</th>
+                    <th>Total Predictions</th>
+                    <th>Success Rate</th>
+                    <th>Avg Response Time</th>
+                    <th>Avg Confidence</th>
+                </tr>
+                {% for model, metrics in data.model_metrics.items() %}
+                <tr>
+                    <td>{{ model }}</td>
+                    <td>{{ metrics.total_predictions }}</td>
+                    <td>{{ "%.2f"|format(metrics.success_rate * 100) }}%</td>
+                    <td>{{ "%.2f"|format(metrics.avg_response_time) }}ms</td>
+                    <td>{{ "%.2f"|format(metrics.avg_confidence * 100) }}%</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+</body>
+</html>

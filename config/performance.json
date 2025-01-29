@@ -1,0 +1,200 @@
+{
+  "database": {
+    "name": "headai_performance",
+    "user": "headai_perf",
+    "password": "${DB_PASSWORD}",
+    "host": "localhost",
+    "port": 5432,
+    "pool_size": 20,
+    "max_overflow": 10
+  },
+
+  "redis": {
+    "host": "localhost",
+    "port": 6379,
+    "password": "${REDIS_PASSWORD}",
+    "db": 2,
+    "pool_size": 100
+  },
+
+  "profiling": {
+    "enabled": true,
+    "sampling_rate": 100,
+    "output_dir": "logs/profiling",
+    "retention_days": 30,
+    "cpu_profiling": {
+      "enabled": true,
+      "interval": 0.1,
+      "top_functions": 20
+    },
+    "memory_profiling": {
+      "enabled": true,
+      "interval": 1.0,
+      "leak_detection": true
+    },
+    "line_profiling": {
+      "enabled": true,
+      "target_functions": [
+        "process_request",
+        "handle_response",
+        "query_database"
+      ]
+    }
+  },
+
+  "database_optimization": {
+    "analyze_queries": true,
+    "max_query_time": 1000,
+    "index_suggestions": true,
+    "table_statistics": true,
+    "vacuum_analyze": {
+      "enabled": true,
+      "schedule": "0 0 * * *"
+    },
+    "monitored_tables": [
+      "users",
+      "sessions",
+      "transactions",
+      "logs"
+    ]
+  },
+
+  "caching": {
+    "strategies": {
+      "memory": {
+        "enabled": true,
+        "max_size": "1GB",
+        "eviction_policy": "LRU"
+      },
+      "redis": {
+        "enabled": true,
+        "max_memory": "2GB",
+        "eviction_policy": "volatile-lru"
+      },
+      "file": {
+        "enabled": true,
+        "max_size": "5GB",
+        "path": "cache/files"
+      }
+    },
+    "ttl": {
+      "default": 3600,
+      "user_data": 300,
+      "session_data": 1800,
+      "static_content": 86400
+    },
+    "compression": {
+      "enabled": true,
+      "algorithm": "lz4",
+      "min_size": 1024
+    }
+  },
+
+  "load_testing": {
+    "concurrent_users": {
+      "min": 10,
+      "max": 1000,
+      "step": 10
+    },
+    "duration": {
+      "ramp_up": 60,
+      "steady_state": 300,
+      "ramp_down": 60
+    },
+    "thresholds": {
+      "response_time": {
+        "p95": 500,
+        "p99": 1000
+      },
+      "error_rate": 0.01,
+      "requests_per_second": 100
+    },
+    "scenarios": [
+      {
+        "name": "basic_flow",
+        "weight": 70,
+        "think_time": 1.5
+      },
+      {
+        "name": "complex_flow",
+        "weight": 30,
+        "think_time": 2.5
+      }
+    ]
+  },
+
+  "monitoring": {
+    "metrics": {
+      "collection_interval": 10,
+      "retention_period": "7d",
+      "aggregation_interval": "1m"
+    },
+    "alerts": {
+      "cpu_usage": 80,
+      "memory_usage": 85,
+      "disk_usage": 90,
+      "response_time": 1000
+    },
+    "logging": {
+      "level": "INFO",
+      "format": "json",
+      "output": ["file", "stdout"]
+    }
+  },
+
+  "optimization": {
+    "auto_tune": {
+      "enabled": true,
+      "parameters": [
+        "pool_size",
+        "cache_size",
+        "batch_size"
+      ]
+    },
+    "resource_limits": {
+      "cpu_cores": 4,
+      "memory": "8GB",
+      "disk_space": "100GB"
+    },
+    "batch_processing": {
+      "enabled": true,
+      "max_batch_size": 1000,
+      "max_delay": 5
+    }
+  },
+
+  "reporting": {
+    "formats": ["html", "pdf", "json"],
+    "sections": [
+      "executive_summary",
+      "performance_metrics",
+      "bottlenecks",
+      "recommendations"
+    ],
+    "charts": [
+      "response_time_distribution",
+      "resource_usage",
+      "error_rates",
+      "throughput"
+    ],
+    "export": {
+      "enabled": true,
+      "schedule": "0 0 * * *",
+      "retention": "90d"
+    }
+  },
+
+  "tools": {
+    "enabled": [
+      "cProfile",
+      "line_profiler",
+      "memory_profiler",
+      "py-spy",
+      "locust"
+    ],
+    "custom_tools": {
+      "path": "performance/tools",
+      "allowed_extensions": [".py"]
+    }
+  }
+}

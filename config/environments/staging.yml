@@ -1,0 +1,92 @@
+environment: staging
+debug: false
+log_level: INFO
+
+# Database Configuration
+database:
+  host: ${DB_HOST}
+  port: ${DB_PORT}
+  name: head_ai_staging
+  user: ${DB_USER}
+  password: ${DB_PASSWORD}
+  ssl_mode: require
+
+# API Configuration
+api:
+  host: 0.0.0.0
+  port: 8000
+  base_url: https://staging-api.headai.com
+  enable_docs: true
+  cors_origins: ["https://staging.headai.com"]
+
+# Monitoring Configuration
+monitoring:
+  system_check_interval: 10
+  error_tracking: true
+  performance_monitoring: true
+  log_retention_days: 60
+
+# Feature Flags
+features:
+  experimental: true
+  beta_features: true
+  debug_tools: false
+
+# Security
+security:
+  jwt_expiry: 12h
+  refresh_token_expiry: 7d
+  password_reset_expiry: 1h
+  rate_limit:
+    enabled: true
+    requests_per_minute: 60
+
+# Cache Configuration
+cache:
+  type: redis
+  host: ${REDIS_HOST}
+  port: ${REDIS_PORT}
+  password: ${REDIS_PASSWORD}
+  max_size: 5GB
+  ttl: 2h
+
+# Storage
+storage:
+  type: s3
+  bucket: head-ai-staging
+  region: us-east-1
+  backup:
+    enabled: true
+    interval: 12h
+    retention_days: 7
+
+# Notifications
+notifications:
+  email:
+    enabled: true
+    smtp_host: ${SMTP_HOST}
+    smtp_port: ${SMTP_PORT}
+    smtp_user: ${SMTP_USER}
+    smtp_password: ${SMTP_PASSWORD}
+  slack:
+    enabled: true
+    webhook_url: ${SLACK_WEBHOOK_URL}
+
+# Analytics
+analytics:
+  enabled: true
+  tracking_id: ${ANALYTICS_ID}
+  anonymize_ip: true
+
+# AI Models
+ai_models:
+  default_model: gpt-4
+  temperature: 0.7
+  max_tokens: 4000
+  cache_responses: true
+
+# Error Reporting
+error_reporting:
+  sentry_dsn: ${SENTRY_DSN}
+  environment: staging
+  traces_sample_rate: 0.5

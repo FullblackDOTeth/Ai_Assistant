@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Head AI Documentation</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism-okaidia.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2196F3;
+            --secondary-color: #1976D2;
+            --text-color: #333;
+            --background-color: #f5f5f5;
+            --code-background: #272822;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--background-color);
+        }
+
+        .navbar-fixed {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .sidenav {
+            width: 300px;
+            padding-top: 20px;
+        }
+
+        .sidenav li > a {
+            padding: 0 32px;
+        }
+
+        .main-content {
+            padding: 20px;
+            margin-left: 300px;
+        }
+
+        .section {
+            padding-top: 40px;
+            padding-bottom: 40px;
+        }
+
+        .card {
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .card-title {
+            color: var(--primary-color);
+        }
+
+        pre {
+            background-color: var(--code-background);
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: 'Fira Code', monospace;
+        }
+
+        .method-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            color: white;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .get { background-color: #61affe; }
+        .post { background-color: #49cc90; }
+        .put { background-color: #fca130; }
+        .delete { background-color: #f93e3e; }
+
+        .endpoint {
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            background-color: white;
+        }
+
+        .endpoint-url {
+            font-family: monospace;
+            padding: 5px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+        }
+
+        .parameters table {
+            width: 100%;
+            margin: 10px 0;
+        }
+
+        .response-codes {
+            margin-top: 10px;
+        }
+
+        .response-code {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 3px;
+            margin-right: 5px;
+        }
+
+        .code-200 { background-color: #49cc90; color: white; }
+        .code-400 { background-color: #fca130; color: white; }
+        .code-401 { background-color: #f93e3e; color: white; }
+        .code-403 { background-color: #f93e3e; color: white; }
+        .code-404 { background-color: #f93e3e; color: white; }
+        .code-500 { background-color: #f93e3e; color: white; }
+
+        .search-box {
+            padding: 10px;
+            margin: 10px;
+        }
+
+        .version-selector {
+            padding: 10px;
+            margin: 10px;
+        }
+
+        .feedback-section {
+            margin-top: 40px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 4px;
+        }
+
+        @media only screen and (max-width: 992px) {
+            .main-content {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <div class="navbar-fixed">
+        <nav class="blue darken-2">
+            <div class="nav-wrapper">
+                <a href="#" class="brand-logo center">Head AI Documentation</a>
+                <a href="#" data-target="slide-out" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Sidebar -->
+    <ul id="slide-out" class="sidenav sidenav-fixed">
+        <li>
+            <div class="search-box">
+                <input type="text" placeholder="Search documentation..." id="search">
+            </div>
+        </li>
+        <li>
+            <div class="version-selector">
+                <select id="version">
+                    <option value="1.0.0">Version 1.0.0</option>
+                    <option value="0.9.0">Version 0.9.0</option>
+                </select>
+            </div>
+        </li>
+        <li><div class="divider"></div></li>
+        <li><a href="#api-reference">API Reference</a></li>
+        <li><a href="#integration-guide">Integration Guide</a></li>
+        <li><a href="#best-practices">Best Practices</a></li>
+        <li><a href="#troubleshooting">Troubleshooting</a></li>
+    </ul>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- API Reference -->
+        <section id="api-reference" class="section">
+            <h2>API Reference</h2>
+            {% for endpoint in api_docs.endpoints %}
+            <div class="endpoint card">
+                <div class="card-content">
+                    <span class="method-badge {{ endpoint.method.lower() }}">{{ endpoint.method }}</span>
+                    <span class="endpoint-url">{{ endpoint.path }}</span>
+                    <p>{{ endpoint.description }}</p>
+                    
+                    <div class="parameters">
+                        <h5>Parameters</h5>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Type</th>
+                                    <th>Required</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for param in endpoint.parameters %}
+                                <tr>
+                                    <td>{{ param.name }}</td>
+                                    <td>{{ param.type }}</td>
+                                    <td>{{ param.required }}</td>
+                                    <td>{{ param.description }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="response-codes">
+                        <h5>Response Codes</h5>
+                        {% for code, desc in endpoint.responses.items() %}
+                        <span class="response-code code-{{ code }}">{{ code }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </section>
+
+        <!-- Integration Guide -->
+        <section id="integration-guide" class="section">
+            <h2>Integration Guide</h2>
+            {% for section in guide.sections %}
+            <div class="card">
+                <div class="card-content">
+                    <span class="card-title">{{ section.title }}</span>
+                    {{ section.content | safe }}
+                </div>
+            </div>
+            {% endfor %}
+
+            <h3>Code Examples</h3>
+            {% for example in guide.examples %}
+            <div class="card">
+                <div class="card-content">
+                    <span class="card-title">{{ example.title }}</span>
+                    <pre><code class="language-{{ example.language }}">{{ example.content }}</code></pre>
+                </div>
+            </div>
+            {% endfor %}
+        </section>
+
+        <!-- Best Practices -->
+        <section id="best-practices" class="section">
+            <h2>Best Practices</h2>
+            {% for category in practices.categories %}
+            <div class="card">
+                <div class="card-content">
+                    <span class="card-title">{{ category.name }}</span>
+                    {{ category.content | safe }}
+                </div>
+            </div>
+            {% endfor %}
+        </section>
+
+        <!-- Troubleshooting -->
+        <section id="troubleshooting" class="section">
+            <h2>Troubleshooting</h2>
+            {% for category in troubleshooting.issues %}
+            <div class="card">
+                <div class="card-content">
+                    <span class="card-title">{{ category.name }}</span>
+                    {% for problem in category.problems %}
+                    <div class="problem">
+                        <h5>{{ problem.title }}</h5>
+                        {{ problem.content | safe }}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </section>
+
+        <!-- Feedback Section -->
+        <section class="feedback-section">
+            <h4>Was this documentation helpful?</h4>
+            <button class="btn waves-effect waves-light" onclick="submitFeedback('yes')">
+                <i class="material-icons left">thumb_up</i>Yes
+            </button>
+            <button class="btn waves-effect waves-light red" onclick="submitFeedback('no')">
+                <i class="material-icons left">thumb_down</i>No
+            </button>
+            <div id="feedback-form" style="display: none;">
+                <textarea id="feedback-text" class="materialize-textarea" placeholder="How can we improve?"></textarea>
+                <button class="btn waves-effect waves-light" onclick="submitFeedbackText()">Submit</button>
+            </div>
+        </section>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lunr.js/2.3.9/lunr.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Materialize components
+            M.Sidenav.init(document.querySelectorAll('.sidenav'));
+            M.FormSelect.init(document.querySelectorAll('select'));
+
+            // Initialize search
+            const searchIndex = lunr(function() {
+                this.field('title');
+                this.field('content');
+                // Add documents to index
+            });
+
+            // Search functionality
+            document.getElementById('search').addEventListener('input', function(e) {
+                const query = e.target.value;
+                if (query.length > 2) {
+                    const results = searchIndex.search(query);
+                    // Update UI with results
+                }
+            });
+        });
+
+        // Feedback handling
+        function submitFeedback(type) {
+            const feedbackForm = document.getElementById('feedback-form');
+            feedbackForm.style.display = type === 'no' ? 'block' : 'none';
+            // Send feedback to server
+        }
+
+        function submitFeedbackText() {
+            const text = document.getElementById('feedback-text').value;
+            // Send feedback text to server
+            document.getElementById('feedback-form').style.display = 'none';
+            M.toast({html: 'Thank you for your feedback!'});
+        }
+    </script>
+</body>
+</html>

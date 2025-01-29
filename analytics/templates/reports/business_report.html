@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Head AI Business Report</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 40px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .section {
+            margin-bottom: 30px;
+        }
+        .metric {
+            margin: 15px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f5f5f5;
+        }
+        .chart {
+            width: 100%;
+            height: 300px;
+            margin: 15px 0;
+        }
+        .highlight {
+            color: #2196F3;
+            font-weight: bold;
+        }
+        .trend-positive {
+            color: #4CAF50;
+        }
+        .trend-negative {
+            color: #F44336;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Head AI Business Report</h1>
+        <p>Generated on: {{ data.timestamp }}</p>
+        <p>Timeframe: {{ data.timeframe }}</p>
+    </div>
+
+    <div class="section">
+        <h2>User Growth</h2>
+        <div class="metric">
+            <h3>Growth Metrics</h3>
+            <table>
+                <tr>
+                    <th>Metric</th>
+                    <th>Current</th>
+                    <th>Growth Rate</th>
+                </tr>
+                <tr>
+                    <td>Active Users</td>
+                    <td>{{ data.insights.user_growth.current }}</td>
+                    <td class="{{ 'trend-positive' if data.insights.user_growth.growth > 0 else 'trend-negative' }}">
+                        {{ "%.2f"|format(data.insights.user_growth.growth * 100) }}%
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Usage Trends</h2>
+        <div class="metric">
+            <h3>Usage Metrics</h3>
+            <table>
+                <tr>
+                    <th>Metric</th>
+                    <th>Value</th>
+                </tr>
+                <tr>
+                    <td>Daily Average Requests</td>
+                    <td>{{ "%.2f"|format(data.insights.usage_trends.daily_average) }}</td>
+                </tr>
+                <tr>
+                    <td>Peak Usage</td>
+                    <td>{{ data.insights.usage_trends.peak_usage }}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Performance Analysis</h2>
+        <div class="metric">
+            <h3>Response Time Metrics</h3>
+            <table>
+                <tr>
+                    <th>Metric</th>
+                    <th>Value</th>
+                </tr>
+                <tr>
+                    <td>Average Response Time</td>
+                    <td>{{ "%.2f"|format(data.insights.performance_trends.response_time_avg) }}ms</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Cost Analysis</h2>
+        <div class="metric">
+            <h3>Cost Metrics</h3>
+            <table>
+                <tr>
+                    <th>Metric</th>
+                    <th>Value</th>
+                </tr>
+                <tr>
+                    <td>Total Cost</td>
+                    <td>${{ "%.2f"|format(data.insights.cost_analysis.total_cost) }}</td>
+                </tr>
+                <tr>
+                    <td>Daily Average Cost</td>
+                    <td>${{ "%.2f"|format(data.insights.cost_analysis.daily_average) }}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Key Insights</h2>
+        <div class="metric">
+            <ul>
+                {% if data.insights.user_growth.growth > 0.1 %}
+                <li class="highlight">Strong user growth of {{ "%.1f"|format(data.insights.user_growth.growth * 100) }}%</li>
+                {% endif %}
+                
+                {% if data.insights.usage_trends.daily_average > data.insights.usage_trends.peak_usage * 0.8 %}
+                <li class="highlight">High sustained usage, consider scaling infrastructure</li>
+                {% endif %}
+                
+                {% if data.insights.cost_analysis.daily_average > 1000 %}
+                <li class="highlight">High daily costs, review resource optimization</li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,61 @@
+---
+# Core Modules
+learning_core:
+  name: learning_core
+  version: "1.0.0"
+  dependencies:
+    - numpy
+    - torch
+    - transformers
+  is_core: true
+  test_path: tests/modules/learning_core
+  doc_path: docs/modules/learning_core
+  last_verified: null
+  metrics:
+    complexity: 0
+    test_coverage: 0
+
+data_processing:
+  name: data_processing
+  version: "1.0.0"
+  dependencies:
+    - pandas
+    - numpy
+    - scikit-learn
+  is_core: true
+  test_path: tests/modules/data_processing
+  doc_path: docs/modules/data_processing
+  last_verified: null
+  metrics:
+    complexity: 0
+    test_coverage: 0
+
+model_management:
+  name: model_management
+  version: "1.0.0"
+  dependencies:
+    - torch
+    - tensorflow
+    - gensim
+  is_core: true
+  test_path: tests/modules/model_management
+  doc_path: docs/modules/model_management
+  last_verified: null
+  metrics:
+    complexity: 0
+    test_coverage: 0
+
+# Optional Modules
+visualization:
+  name: visualization
+  version: "1.0.0"
+  dependencies:
+    - plotly
+    - networkx
+  is_core: false
+  test_path: tests/modules/visualization
+  doc_path: docs/modules/visualization
+  last_verified: null
+  metrics:
+    complexity: 0
+    test_coverage: 0
