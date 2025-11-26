@@ -1,6 +1,7 @@
 import pytest
 from datetime import datetime
 import os
+import time
 from pathlib import Path
 from sqlalchemy.orm import Session
 from src.data.db_config import DatabaseConfig, Base
@@ -101,36 +102,106 @@ def backup_config(temp_dir):
     }
 
 class TestBackupManager:
-    def test_create_backup(self, backup_config, temp_dir):
+    def test_create_backup(self, backup_config, temp_dir, monkeypatch):
         manager = BackupManager(backup_config)
-        
+
+        def mock_backup_database(backup_path):
+            db_backup_path = Path(backup_path) / "database.sql"
+            db_backup_path.write_text("test database content")
+            return str(db_backup_path)
+
+        def mock_backup_files(backup_path):
+            files_backup_path = Path(backup_path) / "files"
+            files_backup_path.mkdir(parents=True, exist_ok=True)
+            (files_backup_path / "test.txt").write_text("file content")
+            return str(files_backup_path)
+
+        monkeypatch.setattr(manager, "_backup_database", mock_backup_database)
+        monkeypatch.setattr(manager, "_backup_files", mock_backup_files)
+
         # Create test data
         data_dir = temp_dir / 'data'
         data_dir.mkdir()
         (data_dir / 'test.txt').write_text('test data')
-        
+
         # Create backup
         backup_path = manager.create_backup()
-        assert os.path.exists(backup_path)
-        assert backup_path.endswith('.tar.gz')
+        try:
+            assert os.path.exists(backup_path)
+            assert backup_path.endswith('.tar.gz')
+        finally:
+            Path(backup_path).unlink(missing_ok=True)
 
-    def test_list_backups(self, backup_config):
-        manager = BackupManager(backup_config)
-        
-        # Create test backup
-        backup_path = manager.create_backup()
-        
+    def test_list_backups(self, backup_config, temp_dir, monkeypatch):
+        backup_dir = temp_dir / 'backups' / 'list_backups'
+        local_config = {
+            'backup': {
+                **backup_config['backup'],
+                'directory': str(backup_dir)
+            }
+        }
+        manager = BackupManager(local_config)
+
+        def mock_backup_database(backup_path):
+            db_backup_path = Path(backup_path) / "database.sql"
+            db_backup_path.write_text("db content")
+            return str(db_backup_path)
+
+        def mock_backup_files(backup_path):
+            files_backup_path = Path(backup_path) / "files"
+            files_backup_path.mkdir(parents=True, exist_ok=True)
+            (files_backup_path / "file.txt").write_text("content")
+            return str(files_backup_path)
+
+        monkeypatch.setattr(manager, "_backup_database", mock_backup_database)
+        monkeypatch.setattr(manager, "_backup_files", mock_backup_files)
+
+        created_backups = []
+        for _ in range(3):
+            backup_path = manager.create_backup()
+            created_backups.append(backup_path)
+            time.sleep(1)
+
         # List backups
         backups = manager.list_backups()
-        assert len(backups) > 0
-        assert backups[0]['path'] == backup_path
 
-    def test_verify_backup(self, backup_config):
+        assert len(backups) == len(created_backups)
+
+        created_times = [backup['created_at'] for backup in backups]
+        assert all(isinstance(created_at, datetime) for created_at in created_times)
+        assert created_times == sorted(created_times, reverse=True)
+
+        backup_dir_path = Path(manager.backup_dir).resolve()
+        for backup in backups:
+            resolved_path = Path(backup['path']).resolve()
+            assert resolved_path.relative_to(backup_dir_path)
+
+        for path in created_backups:
+            Path(path).unlink(missing_ok=True)
+
+    def test_verify_backup(self, backup_config, monkeypatch):
         manager = BackupManager(backup_config)
-        
+
+        def mock_backup_database(backup_path):
+            db_backup_path = Path(backup_path) / "database.sql"
+            db_backup_path.write_text("db content")
+            return str(db_backup_path)
+
+        def mock_backup_files(backup_path):
+            files_backup_path = Path(backup_path) / "files"
+            files_backup_path.mkdir(parents=True, exist_ok=True)
+            (files_backup_path / "file.txt").write_text("content")
+            return str(files_backup_path)
+
+        monkeypatch.setattr(manager, "_backup_database", mock_backup_database)
+        monkeypatch.setattr(manager, "_backup_files", mock_backup_files)
+
         # Create and verify backup
         backup_path = manager.create_backup()
-        assert manager.verify_backup(backup_path)
+        try:
+            assert manager.verify_backup(backup_path)
+        finally:
+            Path(backup_path).unlink(missing_ok=True)
 
 class TestDataValidator:
     def test_validate_user_model(self):
